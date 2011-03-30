@@ -1,11 +1,24 @@
-You should have mongod running in your localhost. Instructions to install it in
-mac os x can be found here:
+This is an extension of django-tastypie to support the fork of django with
+nonrelational backends, and MongoDB in particular. It should poof useful when
+Django 1.4 incorporates non-relational backends. Still under development.
+
+In order to run the tests, you should:
+
+Get mongod running in your localhost.
+
+Download the latest version from here:
+
+http://www.mongodb.org/downloads
+
+Instructions to install it in mac os x can be found here:
 
 http://shiftcommathree.com/articles/how-to-install-mongodb-on-os-x
+
+I would recommend using virtualenvwrapper:
+http://www.doughellmann.com/projects/virtualenvwrapper/
+
+# Create a new environment
 
 mkvirtualenv --no-site-packages django-tastypie-nonrel
 
 pip install -r requirements.txt
-
-git subomdule init
-git submodule update
