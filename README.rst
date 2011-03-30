@@ -33,17 +33,18 @@ source django_tastypie_nonrel-env/bin/activate
 pip install -r requirements.txt
 
 # Run tests
+
 python manage.py test eg
 
-# Not very surprisingly, most of the fields were easily repurposed for
-# non-relational fields. List and Dict fields are working fine, it seems.
+Not very surprisingly, most of the fields were easily repurposed for
+non-relational fields. List and Dict fields are working fine, it seems.
 
-# Embedded fields reuse ToOneField. They are working except for update 
-# operations. This is because in # order to update, django-mongodb-engine 
-# uses A queries:
+Embedded fields reuse ToOneField. They are working except for update 
+operations. This is because in # order to update, django-mongodb-engine 
+uses A queries:
 http://django-mongodb-engine.github.com/mongodb-engine/embedded-objects.html#updating
 
-# ListFields of EmbeddedFields use ToManyField and work for read, and almost for
-# write
+ListFields of EmbeddedFields use ToManyField and work for read, and almost for
+write
 
-// This software was written listening to Ratatat.
+// This software was written listening to Ratatat. You might like them.
