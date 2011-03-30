@@ -1,3 +1,0 @@
-[submodule "src/tastypie"]
-	path = src/tastypie
-	url = git@github.com:andresdouglas/django-tastypie.git
