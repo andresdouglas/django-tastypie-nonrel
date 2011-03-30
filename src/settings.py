@@ -10,14 +10,25 @@ ADMINS = (
 MANAGERS = ADMINS
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-    }
+  'dev' :{
+      'ENGINE' : 'django_mongodb_engine',
+      'DATABASE_NAME' : 'dev',
+      'USER' : '',
+      'PASSWORD': '',
+      'HOST' : 'localhost',
+      'PORT' : 27017,
+      'SUPPORTS_TRANSACTIONS' : False,
+  },
+  'default': {
+      'ENGINE': 'django_mongodb_engine',
+      'NAME': 'bakodo_dev',
+      'USER': '',
+      'PASSWORD': '',
+      'HOST': 'localhost',
+      'PORT': 27017,
+      'SUPPORTS_TRANSACTIONS' : False,
+  }
+
 }
 
 # Local time zone for this installation. Choices can be found here:
@@ -119,6 +130,11 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'djangotoolbox',
+    'permission_backend_nonrel', # this has to go after djangotoolbox
+    'tastypie',
+    'eg',
+
 )
 
 # A sample logging configuration. The only tangible logging
