@@ -1,6 +1,8 @@
-This is an extension of django-tastypie (https://github.com/toastdriven/django-tastypie/) to support the fork of django with
-nonrelational backends, and MongoDB in particular. It should proof useful when
-Django 1.4 incorporates non-relational backends. Still under development.
+This is an extension of django-tastypie (https://github.com/toastdriven/django-tastypie/)
+to support django-nonrel (http://www.allbuttonspressed.com/projects/django-nonrel)
+the fork of django with nonrelational backends, and MongoDB in particular. 
+It should proof useful when Django 1.4 incorporates non-relational backends. 
+Still under development.
 
 In order to run the tests, you should:
 
