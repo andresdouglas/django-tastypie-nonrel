@@ -27,7 +27,7 @@ def print_resp(resp):
 ############################################
 # LISTS
 ############################################
-
+'''
 class ListFieldTest(TestCase):
     # fixtures = ['list_field_test.json', 'dict_field_test.json']
 
@@ -100,7 +100,7 @@ class ListFieldTest(TestCase):
 
     def test_delete(self):
         pass
-
+'''
 ############################################
 # EMBEDDED LISTS
 ############################################
@@ -152,7 +152,7 @@ class EmbeddedListFieldTest(TestCase):
 ############################################
 # DICTS
 ############################################
-
+'''
 class DictFieldTest(TestCase):
 
     def setUp(self):
@@ -224,7 +224,12 @@ class DictFieldTest(TestCase):
  
     def test_delete(self):
         pass
+'''
 
+
+############################################
+# EMBEDDED
+############################################
 class EmbededModelFieldTest(TestCase):
     def setUp(self):
         from django.conf import settings; settings.DEBUG = True
@@ -272,7 +277,7 @@ class EmbededModelFieldTest(TestCase):
         # change it
         p['customer']['name'] = "philip"
         put_data = json.dumps(p)
-        put_data = '{"customer":{"name":"philip"}}'
+        # put_data = '{"customer":{"name":"philip"}}'
         print "put data ", put_data
         location = p['resource_uri']
         resp = self.client.put(location,
