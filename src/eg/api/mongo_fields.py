@@ -1,6 +1,8 @@
 from tastypie import fields
 from tastypie.fields import ApiField, ToOneField, ToManyField, ApiFieldError
 from tastypie.bundle import Bundle
+from tastypie.utils import dict_strip_unicode_keys
+
 import pdb
 
 
@@ -60,6 +62,7 @@ class DictField(ApiField):
         return value
 
 class EmbeddedModelField(ToOneField):
+    is_related = False
     dehydrated_type     =   'embedded'
 
     def __init__(self, embedded, attribute, null=False, help_text=None):
@@ -74,17 +77,23 @@ class EmbeddedModelField(ToOneField):
                                                  full=True,
                                                  help_text=help_text,
                                                 )
-'''
     def dehydrate(self, obj):
-        pdb.set_trace()
-        return self.convert(super(EmbeddedModelField, self).dehydrate(obj))
+        return super(EmbeddedModelField, self).dehydrate(obj).data
 
-    def convert(self, value):
-        pdb.set_trace()
-        if value is None:
-            return None
-'''
+    def hydrate(self, bundle):
+        return super(EmbeddedModelField, self).hydrate(bundle).obj
+
+    def build_related_resource(self, value):
+        """
+        Used to ``hydrate`` the data provided. If just a URL is provided,
+        the related resource is attempted to be loaded. If a
+        dictionary-like structure is provided, a fresh resource is
+        created.
+        """
+        self.fk_resource = self.to_class()
         
-    # Probably have to override
-    # def build_related_resource(self):
-
+        # Try to hydrate the data provided.
+        value = dict_strip_unicode_keys(value)
+        self.fk_bundle = Bundle(data=value)
+            
+        return self.fk_resource.full_hydrate(self.fk_bundle)
