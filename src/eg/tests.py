@@ -122,32 +122,27 @@ class EmbeddedListFieldTest(TestCase):
     def test_get(self):
         resp = self.client.get('/api/v1/embeddedlistfieldtest/',
                                content_type='application/json') 
-        print_resp(resp)
+
         self.assertEqual(resp.status_code, 200)
         deserialized = json.loads(resp.content)
         self.assertEqual(len(deserialized['objects']), 1)
 
-    #################### 
-    # Big Bag of FAIL
-    ####################
     def test_post(self):
         post_data = '{"list":[{"name":"evan"}, {"name":"ethan"}]}'
         resp = self.client.post('/api/v1/embeddedlistfieldtest/',
                                 data = post_data,
                                 content_type = 'application/json'
                                )
-
-        print_resp(resp)
         self.assertEqual(resp.status_code, 201)
-        # pdb.set_trace()
 
-        resp = self.client.get('/api/v1/embeddedlistfieldtest/', 
-                               content_type='application/json') 
-        print_resp(resp)
+        location = resp['Location']
+
+        resp = self.client.get(location,
+                               content_type='application/json')
         self.assertEqual(resp.status_code, 200)
 
         deserialized = json.loads(resp.content)
-        self.assertEqual(len(deserialized['objects']), 2)
+        self.assertEqual(len(deserialized['list']), 2)
         
 ############################################
 # DICTS

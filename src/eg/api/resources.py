@@ -48,6 +48,28 @@ class EmbeddedListFieldTestResource(ModelResource):
         authorization       =   Authorization()
         authentication      =   Authentication()
 
+    def obj_create(self, bundle, request=None, **kwargs):
+        """
+        A ORM-specific implementation of ``obj_create``.
+        """
+        bundle.obj = self._meta.object_class()
+        
+        for key, value in kwargs.items():
+            setattr(bundle.obj, key, value)
+        
+        bundle = self.full_hydrate(bundle)
+        
+        # Now pick up the M2M bits.
+        m2m_bundle = self.hydrate_m2m(bundle)
+        self.save_m2m(m2m_bundle)
+
+        bundle.obj.save()
+        return bundle
+
+    def hydrate_m2m(self, bundle):
+        ret = super(EmbeddedListFieldTestResource, self).hydrate_m2m(bundle)
+        return ret
+
 class DictFieldTestResource(ModelResource):
     dict            =   DictField(attribute='dict')
 
