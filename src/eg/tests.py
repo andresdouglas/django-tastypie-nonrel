@@ -5,24 +5,11 @@ from django.http import HttpRequest
 
 from django.test import TestCase
 import settings
-import pdb
 
 try:
     import json
 except ImportError:
     import simplejson as json
-
-def print_resp(resp):
-    if not resp.content:
-        return
-    try:
-        deserialized = json.loads(resp.content)
-        if 'error_message' in deserialized.keys():
-            print "ERROR: ", deserialized.get('error_message', '')
-            print "TRACEBACK: ", deserialized.get('traceback', '')
-        print json.dumps(deserialized, indent=4)
-    except:
-        print "resp is not json: ", resp
 
 ############################################
 # LISTS
@@ -50,7 +37,6 @@ class ListFieldTest(TestCase):
     def test_get(self):
         resp = self.client.get('/api/v1/listfieldtest/',
                                content_type='application/json') 
-        print_resp(resp)
         self.assertEqual(resp.status_code, 200)
         deserialized = json.loads(resp.content)
         self.assertEqual(len(deserialized['objects']), 3)
@@ -66,7 +52,6 @@ class ListFieldTest(TestCase):
 
         resp = self.client.get('/api/v1/listfieldtest/', 
                                content_type='application/json') 
-        print_resp(resp)
         self.assertEqual(resp.status_code, 200)
 
         deserialized = json.loads(resp.content)
@@ -173,7 +158,6 @@ class DictFieldTest(TestCase):
     def test_get(self):
         resp = self.client.get('/api/v1/dictfieldtest/', 
                                content_type='application/json') 
-        print_resp(resp)
         self.assertEqual(resp.status_code, 200)
 
     def test_post(self):
@@ -187,14 +171,12 @@ class DictFieldTest(TestCase):
 
         resp = self.client.get('/api/v1/dictfieldtest/', 
                                content_type='application/json') 
-        print_resp(resp)
         self.assertEqual(resp.status_code, 200)
 
     def test_put(self):
         resp = self.client.get('/api/v1/dictfieldtest/',
                                content_type='application/json') 
         self.assertEqual(resp.status_code, 200) 
-        print_resp(resp) 
         deserialized = json.loads(resp.content)
         l = deserialized['objects'][0]
         l['dict'] = {'1':'one', 'two':2}
@@ -210,7 +192,6 @@ class DictFieldTest(TestCase):
         resp = self.client.get('/api/v1/dictfieldtest/',
                                content_type='application/json') 
         self.assertEqual(resp.status_code, 200) 
-        print_resp(resp)
         deserialized = json.loads(resp.content)
         # it's last, because when you delete an element in a list it gets pushed
         # to the back
@@ -234,15 +215,12 @@ class EmbededModelFieldTest(TestCase):
                            customer2=PersonTest(name="douglas"),
                                                  )
         ms = EmbeddedModelFieldTest.objects.all()
-        for m in ms:
-            print m
 
     def test_get(self):
         request = HttpRequest()
         resp = self.client.get('/api/v1/embeddedmodelfieldtest/',
                                content_type='application/json',
                                )
-        print_resp(resp)
         self.assertEqual(resp.status_code, 200)
 
     def test_post(self):
@@ -257,7 +235,6 @@ class EmbededModelFieldTest(TestCase):
         resp = self.client.get('/api/v1/embeddedmodelfieldtest/',
                                content_type='application/json',
                                )
-        print_resp(resp)
         self.assertEqual(resp.status_code, 200)
         deserialized = json.loads(resp.content)
         self.assertEqual(len(deserialized['objects']), 2)
@@ -269,22 +246,23 @@ class EmbededModelFieldTest(TestCase):
 
         deserialized = json.loads(resp.content)
         p = deserialized['objects'][0]
-        # change it
         p['customer']['name'] = "philip"
         put_data = json.dumps(p)
-        # put_data = '{"customer":{"name":"philip"}}'
-        print "put data ", put_data
+
         location = p['resource_uri']
         resp = self.client.put(location,
                                data=put_data,
                                content_type='application/json',
                               )
-        resp = self.client.get('/api/v1/embeddedmodelfieldtest/',
+        self.assertEquals(resp.status_code, 204)
+
+        resp = self.client.get(location,
                                content_type='application/json',
                                )
         deserialized = json.loads(resp.content)
-        self.assertEqual(deserialized['objects'][0]['customer']['name'],
-                         'philip')
+
+        self.assertEqual(deserialized,
+                         p)
 
     def test_delete(self):
         resp = self.client.get('/api/v1/embeddedmodelfieldtest/',
