@@ -3,19 +3,14 @@ from tastypie.fields import ApiField, ToOneField, ToManyField, ApiFieldError
 from tastypie.bundle import Bundle
 from tastypie.utils import dict_strip_unicode_keys
 
-import pdb
-
-
 
 class ListField(ApiField):
     dehydrated_type     =   'list'
 
     def dehydrate(self, obj):
-        # pdb.set_trace()
         return self.convert(super(ListField, self).dehydrate(obj))
 
     def convert(self, value):
-        # pdb.set_trace()
         if value is None:
             return None
         return value 
@@ -52,7 +47,6 @@ class DictField(ApiField):
     dehydrated_type     =   'dict'
     
     def dehydrate(self, obj):
-        # pdb.set_trace()
         return self.convert(super(DictField, self).dehydrate(obj))
 
     def convert(self, value):
