@@ -12,7 +12,7 @@ from tastypie.exceptions import BadRequest
 
 # Testing
 from ..models import ListFieldTest, DictFieldTest, EmbeddedModelFieldTest, PersonTest, EmbeddedListFieldTest
-from mongo_fields import ListField, DictField, EmbeddedModelField, EmbeddedListField
+from tastypie_nonrel.fields import ListField, DictField, EmbeddedModelField, EmbeddedListField
 
 
 class PersonTestResource(ModelResource):
