@@ -1,4 +1,4 @@
-# Django settings for src project.
+# Django settings for test project.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -111,7 +111,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-ROOT_URLCONF = 'src.urls'
+ROOT_URLCONF = 'test.urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -133,7 +133,8 @@ INSTALLED_APPS = (
     'djangotoolbox',
     'permission_backend_nonrel', # this has to go after djangotoolbox
     'tastypie',
-    'eg',
+    'tastypie_nonrel',
+    'test_app',
 
 )
 

@@ -1,12 +1,12 @@
 from django.conf.urls.defaults import patterns, include, url
 
 from tastypie.api import Api
-from eg.api.resources import (
-                                ListFieldTestResource,
-                                DictFieldTestResource,
-                                EmbeddedModelFieldTestResource,
-                                EmbeddedListFieldTestResource,
-                               )
+from test_app.api.resources import (
+    ListFieldTestResource,
+    DictFieldTestResource,
+    EmbeddedModelFieldTestResource,
+    EmbeddedListFieldTestResource,
+    )
 
 
 # Uncomment the next two lines to enable the admin:
