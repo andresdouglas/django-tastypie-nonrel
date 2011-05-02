@@ -33,9 +33,8 @@ class EmbeddedListField(ToManyField):
         # TODO: Also model-specific and leaky. Relies on there being a
         #       ``Manager`` there.
         # NOTE: only had to remove .all()
-        for index, m2m in enumerate(getattr(bundle.obj, self.attribute)):
+        for m2m in getattr(bundle.obj, self.attribute):
             m2m_resource = self.get_related_resource(m2m)
-            m2m_resource.id = index
             m2m_bundle = Bundle(obj=m2m)
             self.m2m_resources.append(m2m_resource)
             m2m_dehydrated.append(self.dehydrate_related(m2m_bundle, m2m_resource))
