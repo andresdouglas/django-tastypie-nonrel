@@ -11,6 +11,17 @@ try:
 except ImportError:
     import simplejson as json
 
+def print_resp(resp):
+   if not resp.content:
+       return
+   try:
+       deserialized = json.loads(resp.content)
+       if 'error_message' in deserialized.keys():
+           print "ERROR: ", deserialized.get('error_message', '')
+           print "TRACEBACK: ", deserialized.get('traceback', '')
+       print json.dumps(deserialized, indent=4)
+   except:
+       print "resp is not json: ", resp
 ############################################
 # LISTS
 ############################################
@@ -128,6 +139,57 @@ class EmbeddedListFieldTest(TestCase):
 
         deserialized = json.loads(resp.content)
         self.assertEqual(len(deserialized['list']), 2)
+
+    def test_put(self):
+        resp = self.client.get('/api/v1/embeddedlistfieldtest/',
+                               content_type='application/json',
+                               )
+
+        deserialized = json.loads(resp.content)
+        print "resp in put"
+        print_resp(resp)
+        p = deserialized['objects'][0]
+        p['list'][0]['name'] = "philip"
+        print "new data ", p
+        put_data = json.dumps(p)
+
+        location = p['resource_uri']
+        # TODO: this is failing, probably because the update needs to be done
+        # using the A() objects described in django-mongodb-engine
+        resp = self.client.put(location,
+                               data=put_data,
+                               content_type='application/json',
+                              )
+        self.assertEquals(resp.status_code, 204)
+
+        resp = self.client.get(location,
+                               content_type='application/json',
+                               )
+        deserialized = json.loads(resp.content)
+
+        self.assertEqual(deserialized,
+                         p)
+        
+
+    def test_delete(self):
+        resp = self.client.get('/api/v1/embeddedlistfieldtest/',
+                               content_type='application/json',
+                               )
+
+        deserialized = json.loads(resp.content)
+        location = deserialized['objects'][0]['resource_uri'] 
+        resp = self.client.delete(location,
+                                  content_type='application/json')
+        self.assertEqual(resp.status_code, 204)
+        # make sure it's actually gone
+        resp = self.client.get('/api/v1/embeddedlistfieldtest/',
+                               content_type='application/json',
+                               )
+        deserialized = json.loads(resp.content)
+        print_resp(resp)
+        # boom
+        self.assertEqual(len(deserialized['objects']), 0)
+        
         
 ############################################
 # DICTS
