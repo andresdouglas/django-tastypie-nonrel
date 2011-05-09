@@ -6,6 +6,7 @@ from tastypie.http import *
 from tastypie.utils import trailing_slash, dict_strip_unicode_keys
 from tastypie.exceptions import ImmediateHttpResponse, NotFound
 from tastypie.bundle import Bundle
+from fields import EmbeddedCollection
 
 class MongoResource(ModelResource):
     """Minor enhancements to the stock ModelResource to allow subresources."""
@@ -15,19 +16,29 @@ class MongoResource(ModelResource):
         request_type = kwargs.pop('request_type')
         return resource.dispatch(request_type, request, **kwargs)
 
-    def override_urls(self):
-        return [
-            url(r"^(?P<resource_name>%s)/(?P<pk>\w[\w-]*)/(?P<subresource_name>%s)%s$" %
-                (self._meta.resource_name, 'items', trailing_slash()),
-                self.wrap_view('dispatch_subresource'),
-                {'request_type': 'list'},
-                name='api_dispatch_subresource_list'),
-            url(r"^(?P<resource_name>%s)/(?P<pk>\w[\w-]*)/(?P<subresource_name>%s)/(?P<index>\w[\w-]*)%s$" %
-                (self._meta.resource_name, 'items', trailing_slash()),
-                self.wrap_view('dispatch_subresource'),
-                {'request_type': 'detail'},
-                name='api_dispatch_subresource_detail')
-            ]
+
+    def base_urls(self):
+        base = super(MongoResource, self).base_urls()
+
+        embedded = ((name, obj) for name, obj in self.fields.items() if isinstance(obj, EmbeddedCollection))
+
+        embedded_urls = []
+
+        for name, obj in embedded:
+            embedded_urls.extend([
+                url(r"^(?P<resource_name>%s)/(?P<pk>\w[\w-]*)/(?P<subresource_name>%s)%s$" %
+                    (self._meta.resource_name, name, trailing_slash()),
+                    self.wrap_view('dispatch_subresource'),
+                    {'request_type': 'list'},
+                    name='api_dispatch_subresource_list'),
+
+                url(r"^(?P<resource_name>%s)/(?P<pk>\w[\w-]*)/(?P<subresource_name>%s)/(?P<index>\w[\w-]*)%s$" %
+                    (self._meta.resource_name, name, trailing_slash()),
+                    self.wrap_view('dispatch_subresource'),
+                    {'request_type': 'detail'},
+                    name='api_dispatch_subresource_detail')
+                ])
+        return embedded_urls + base
 
 
 class MongoListResource(ModelResource):
