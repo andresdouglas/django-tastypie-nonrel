@@ -4,6 +4,11 @@ from tastypie.bundle import Bundle
 from tastypie.utils import dict_strip_unicode_keys
 
 class ListField(ApiField):
+    """
+        Represents a list of simple items - strings, ints, bools, etc. For
+        embedding objects use EmbeddedListField in combination with EmbeddedModelField
+        instead.
+    """
     dehydrated_type     =   'list'
 
     def dehydrate(self, obj):
@@ -15,6 +20,12 @@ class ListField(ApiField):
         return value 
 
 class EmbeddedListField(ToManyField):
+    """
+        Represents a list of embedded objects. It must be used in conjunction
+        with EmbeddedModelField.
+        Does not allow for manipulation (reordering) of List elements. Use
+        EmbeddedCollection instead.
+    """
     is_related = False
     is_m2m = False
 
@@ -55,6 +66,9 @@ class DictField(ApiField):
         return value
 
 class EmbeddedModelField(ToOneField):
+    """
+        Embeds a resource inside another resource just like you would in Mongo.
+    """
     is_related = False
     dehydrated_type     =   'embedded'
 
@@ -92,6 +106,10 @@ class EmbeddedModelField(ToOneField):
         return self.fk_resource.full_hydrate(self.fk_bundle)
 
 class EmbeddedCollection(ToManyField):
+    """
+        EmbeddedCollection allows for operating on the sub resources
+        individually, through the index based collection.
+    """
     is_related = False
     is_m2m = False
 

@@ -42,7 +42,9 @@ class MongoResource(ModelResource):
 
 
 class MongoListResource(ModelResource):
-    """An embedded MongoDB list acting as a collection."""
+    """An embedded MongoDB list acting as a collection. Used in conjunction with
+       a EmbeddedCollection.
+    """
     
     def __init__(self, parent=None, attribute=None, api_name=None):
         self.parent = parent
