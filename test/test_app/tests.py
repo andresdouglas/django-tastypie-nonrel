@@ -292,7 +292,7 @@ class EmbededModelFieldTest(TestCase):
     def test_post(self):
         # TODO: post is failing
         request = HttpRequest()
-        post_data = '{"customer":{"name":"san"},}'
+        post_data = '{"customer":{"name":"san"}}'
         resp = self.client.post('/api/v1/embeddedmodelfieldtest/',
                                data=post_data,
                                content_type='application/json',
