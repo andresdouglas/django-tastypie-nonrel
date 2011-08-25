@@ -149,9 +149,9 @@ class EmbeddedListFieldTest(TestCase):
         p1      = PersonTest(name="arman")
         l       = EmbeddedListFieldTest.objects.create()
         l.list.append(p)
+        l.save()
         l.list.append(p1)
         l.save()
-                                        
 
     def test_get(self):
         resp = self.client.get('/api/v1/embeddedlistfieldtest/',
@@ -159,7 +159,9 @@ class EmbeddedListFieldTest(TestCase):
 
         self.assertEqual(resp.status_code, 200)
         deserialized = json.loads(resp.content)
-        self.assertEqual(len(deserialized['objects']), 1)
+        os = deserialized['objects']
+        self.assertEqual(len(os), 1)
+        self.assertEqual(os[0]['list'][0]['name'], 'andres') 
 
     def test_post(self):
         post_data = '{"list":[{"name":"evan"}, {"name":"ethan"}]}'
@@ -168,15 +170,17 @@ class EmbeddedListFieldTest(TestCase):
                                 content_type = 'application/json'
                                )
         self.assertEqual(resp.status_code, 201)
+        
+        location = resp['location']
 
-        location = resp['Location']
-
-        resp = self.client.get(location,
+        resp = self.client.get('/api/v1/embeddedlistfieldtest/',
                                content_type='application/json')
         self.assertEqual(resp.status_code, 200)
 
         deserialized = json.loads(resp.content)
-        self.assertEqual(len(deserialized['list']), 2)
+        os = deserialized['objects']
+        self.assertEqual(len(os), 2)
+        self.assertEqual(os[1]['list'][0]['name'], 'evan')
 
     def test_put(self):
         resp = self.client.get('/api/v1/embeddedlistfieldtest/',
