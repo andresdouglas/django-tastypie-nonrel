@@ -1,31 +1,44 @@
-from tastypie.resources import ModelResource, Resource
+from tastypie_nonrel.resources import MongoResource, MongoListResource
 from django.conf.urls.defaults import url
 from tastypie.utils import trailing_slash
 
 
-from tastypie import fields
-from tastypie.fields import CharField, ToOneField
+from tastypie.fields import (CharField, 
+                             ForeignKey,
+                            )
 from tastypie.authorization import Authorization
 from tastypie.authentication import BasicAuthentication, Authentication
 from tastypie.bundle import Bundle
 from tastypie.exceptions import BadRequest
 
 # Testing
-from ..models import ListFieldTest, DictFieldTest, EmbeddedModelFieldTest, PersonTest, EmbeddedListFieldTest
-from tastypie_nonrel.fields import ListField, DictField, EmbeddedModelField, EmbeddedListField
+from ..models import (ListFieldTest, 
+                      DictFieldTest, 
+                      EmbeddedModelFieldTest, 
+                      PersonTest,
+                      EmbeddedListFieldTest,
+                      EmbeddedCollectionFieldTest,
+                      CustomerTest,
+                    )
+from tastypie_nonrel.fields import (ListField, 
+                                    DictField, 
+                                    EmbeddedModelField, 
+                                    EmbeddedListField,
+                                    EmbeddedCollection,
+                                    )
 
-
-class PersonTestResource(ModelResource):
-    name            =    CharField(attribute='name')
+class EmbeddedModelFieldTestResource(MongoResource):
+    customer        =   EmbeddedModelField(embedded='test_app.api.resources.PersonTestResource',
+                                           attribute='customer')
 
     class Meta:
-        object_class        =   PersonTest
-        queryset            =   PersonTest.objects.all()
+        object_class        =   EmbeddedModelFieldTest
+        queryset            =   EmbeddedModelFieldTest.objects.all()
         allowed_methods     =   ['get', 'post', 'put', 'delete']
         authorization       =   Authorization()
         authentication      =   Authentication()
 
-class ListFieldTestResource(ModelResource):
+class ListFieldTestResource(MongoResource):
     list            =   ListField(attribute='list')
     intlist         =   ListField(attribute='intlist')
 
@@ -36,8 +49,18 @@ class ListFieldTestResource(ModelResource):
         authorization       =   Authorization()
         authentication      =   Authentication()
 
-class EmbeddedListFieldTestResource(ModelResource):
-    list            =   EmbeddedListField(to=PersonTestResource,
+class DictFieldTestResource(MongoResource):
+    dict            =   DictField(attribute='dict')
+
+    class Meta:
+        object_class        =   DictFieldTest
+        queryset            =   DictFieldTest.objects.all()
+        allowed_methods     =   ['get', 'post', 'put', 'delete']
+        authorization       =   Authorization()
+        authentication      =   Authentication()
+
+class EmbeddedListFieldTestResource(MongoResource):
+    list            =   EmbeddedListField(to='test_app.api.resources.PersonTestResource',
                                     attribute='list',
                                     full=True)
 
@@ -48,25 +71,54 @@ class EmbeddedListFieldTestResource(ModelResource):
         authorization       =   Authorization()
         authentication      =   Authentication()
 
-class DictFieldTestResource(ModelResource):
-    dict            =   DictField(attribute='dict')
+class EmbeddedCollectionFieldTestResource(MongoResource):
+    list            =   EmbeddedCollection(to='test_app.api.resources.PersonTestCollectionResource',
+                                           attribute='list',
+                                           full=True,
+                                           )
 
     class Meta:
-        object_class        =   DictFieldTest
-        queryset            =   DictFieldTest.objects.all()
+        object_class        =   EmbeddedCollectionFieldTest
+        queryset            =   EmbeddedCollectionFieldTest.objects.all()
         allowed_methods     =   ['get', 'post', 'put', 'delete']
         authorization       =   Authorization()
         authentication      =   Authentication()
 
-class EmbeddedModelFieldTestResource(ModelResource):
-    customer        =   EmbeddedModelField(embedded=PersonTestResource,
-                                           attribute='customer')
-    customer2       =   EmbeddedModelField(embedded=PersonTestResource,
-                                           attribute='customer2')
+###################
+# Helper Resources
+###################
+
+class PersonTestCollectionResource(MongoListResource):
+    name            =    CharField(attribute='name')
 
     class Meta:
-        object_class        =   EmbeddedModelFieldTest
-        queryset            =   EmbeddedModelFieldTest.objects.all()
+        object_class        =   PersonTest
+        queryset            =   PersonTest.objects.all()
         allowed_methods     =   ['get', 'post', 'put', 'delete']
         authorization       =   Authorization()
         authentication      =   Authentication()
+
+class PersonTestResource(MongoResource):
+    name            =    CharField(attribute='name')
+
+    class Meta:
+        object_class        =   PersonTest
+        queryset            =   PersonTest.objects.all()
+        allowed_methods     =   ['get', 'post', 'put', 'delete']
+        authorization       =   Authorization()
+        authentication      =   Authentication()
+
+class CustomerTestResource(MongoResource):
+    """
+        Used to test FK
+    """
+    person          =   ForeignKey(to='test_app.api.resources.PersonTestResource',
+                                   attribute='person',
+                                  )
+    class Meta:
+        object_class        =   CustomerTest
+        queryset            =   CustomerTest.objects.all()
+        allowed_methods     =   ['get', 'post', 'put', 'delete']
+        authorization       =   Authorization()
+        authentication      =   Authentication()
+

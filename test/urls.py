@@ -6,6 +6,8 @@ from test_app.api.resources import (
     DictFieldTestResource,
     EmbeddedModelFieldTestResource,
     EmbeddedListFieldTestResource,
+    EmbeddedCollectionFieldTestResource,
+    CustomerTestResource,
     )
 
 
@@ -19,6 +21,8 @@ v1_api.register(ListFieldTestResource())
 v1_api.register(DictFieldTestResource())
 v1_api.register(EmbeddedModelFieldTestResource())
 v1_api.register(EmbeddedListFieldTestResource())
+v1_api.register(EmbeddedCollectionFieldTestResource()),
+v1_api.register(CustomerTestResource())
 
 
 urlpatterns = patterns('',
