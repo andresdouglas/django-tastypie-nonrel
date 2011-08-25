@@ -286,6 +286,7 @@ class EmbededModelFieldTest(TestCase):
                                content_type='application/json',
                                )
         self.assertEqual(resp.status_code, 200)
+        print_resp(resp)
 
     def test_post(self):
         request = HttpRequest()
