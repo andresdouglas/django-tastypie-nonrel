@@ -146,17 +146,11 @@ class EmbeddedListFieldTest(TestCase):
                                )
 
         deserialized = json.loads(resp.content)
-        print "resp in put"
-        print_resp(resp)
         p = deserialized['objects'][0]
         p['list'][0]['name'] = "philip"
         location = p['resource_uri']
-        del p['id']
-        del p['resource_uri']
-        print "new data ", p
-        put_data = json.dumps(p)
+        # submit completely new data
         put_data = '{"list":[{"name":"evan"}, {"name":"ethan"}]}'
-        print "put_data", put_data
 
         resp = self.client.put(location,
                                data=put_data,
@@ -189,7 +183,6 @@ class EmbeddedListFieldTest(TestCase):
                                content_type='application/json',
                                )
         deserialized = json.loads(resp.content)
-        print_resp(resp)
         # boom
         self.assertEqual(len(deserialized['objects']), 0)
         
@@ -286,7 +279,8 @@ class EmbededModelFieldTest(TestCase):
                                content_type='application/json',
                                )
         self.assertEqual(resp.status_code, 200)
-        print_resp(resp)
+        rj = json.loads(resp.content)
+        self.assertEqual(rj['objects'][0]['customer']['name'], 'andres')
 
     def test_post(self):
         request = HttpRequest()
@@ -303,6 +297,7 @@ class EmbededModelFieldTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         deserialized = json.loads(resp.content)
         self.assertEqual(len(deserialized['objects']), 2)
+        self.assertEqual(deserialized['objects'][1]['customer']['name'], 'san')
 
     def test_put(self):
         resp = self.client.get('/api/v1/embeddedmodelfieldtest/',
@@ -328,6 +323,15 @@ class EmbededModelFieldTest(TestCase):
 
         self.assertEqual(deserialized,
                          p)
+
+        resp = self.client.get('/api/v1/embeddedmodelfieldtest/',
+                               content_type='application/json',
+                               )
+
+        deserialized = json.loads(resp.content)
+        self.assertEquals(len(deserialized['objects']), 1)
+        p = deserialized['objects'][0]
+        self.assertEquals(p['customer']['name'], "philip")
 
     def test_delete(self):
         resp = self.client.get('/api/v1/embeddedmodelfieldtest/',
