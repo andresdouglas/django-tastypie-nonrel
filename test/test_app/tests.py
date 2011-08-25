@@ -25,7 +25,6 @@ def print_resp(resp):
 ############################################
 # LISTS
 ############################################
-"""
 class ListFieldTest(TestCase):
     # fixtures = ['list_field_test.json', 'dict_field_test.json']
 
@@ -50,7 +49,16 @@ class ListFieldTest(TestCase):
                                content_type='application/json') 
         self.assertEqual(resp.status_code, 200)
         deserialized = json.loads(resp.content)
-        self.assertEqual(len(deserialized['objects']), 3)
+
+        os = deserialized['objects']
+        self.assertEqual(len(os), 3)
+        
+        self.assertEqual(os[0]['intlist'], [1,2,3])
+        self.assertEqual(os[0]['list'], ['1','2','3'])
+
+        # Objects get transformed to the underlying type of the list
+        self.assertEqual(os[1]['intlist'], [1,2,3])
+        
 
     def test_post(self):
         post_data = '{"list":["1", "2"], "intlist":[1,2]}'
@@ -66,7 +74,10 @@ class ListFieldTest(TestCase):
         self.assertEqual(resp.status_code, 200)
 
         deserialized = json.loads(resp.content)
-        self.assertEqual(len(deserialized['objects']), 4)
+        os = deserialized['objects']
+        self.assertEqual(len(os), 4)
+        self.assertEqual(os[3]['intlist'], [1,2])
+        self.assertEqual(os[3]['list'], ['1','2'])
 
     def test_put(self):
         resp = self.client.get('/api/v1/listfieldtest/',
@@ -74,7 +85,8 @@ class ListFieldTest(TestCase):
         self.assertEqual(resp.status_code, 200) 
         
         deserialized = json.loads(resp.content)
-        l = deserialized['objects'][0]
+        os = deserialized['objects']
+        l = os[0]
         l['list'] = [4,5]
         location = l['resource_uri']
         put_data = json.dumps(l)
@@ -93,10 +105,36 @@ class ListFieldTest(TestCase):
         l = deserialized['objects'][0]
         # the list is of Charfield
         self.assertEquals(l['list'], ['4','5'])
+        
+        resp = self.client.get(location,
+                               content_type='application/json')
+         
+        deserialized = json.loads(resp.content)
+        self.assertEqual(deserialized['list'], ['4', '5'])
 
     def test_delete(self):
-        pass
-"""
+        resp = self.client.get('/api/v1/listfieldtest/',
+                               content_type='application/json') 
+        self.assertEqual(resp.status_code, 200) 
+        
+        deserialized = json.loads(resp.content)
+        os = deserialized['objects']
+        old_len = len(os)
+        location = os[0]['resource_uri']
+
+        resp = self.client.delete(location,
+                                  content_type='application/json')
+
+        self.assertEquals(resp.status_code, 204)
+
+        # make sure it's gone
+        resp = self.client.get('/api/v1/listfieldtest/',
+                               content_type='application/json') 
+        self.assertEqual(resp.status_code, 200) 
+        deserialized = json.loads(resp.content)
+        os = deserialized['objects']  
+        self.assertEquals(len(os), old_len - 1)
+        
 ############################################
 # EMBEDDED LISTS
 ############################################
