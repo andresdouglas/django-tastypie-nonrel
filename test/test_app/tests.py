@@ -25,7 +25,7 @@ def print_resp(resp):
 ############################################
 # LISTS
 ############################################
-'''
+"""
 class ListFieldTest(TestCase):
     # fixtures = ['list_field_test.json', 'dict_field_test.json']
 
@@ -96,7 +96,7 @@ class ListFieldTest(TestCase):
 
     def test_delete(self):
         pass
-'''
+"""
 ############################################
 # EMBEDDED LISTS
 ############################################
@@ -150,10 +150,14 @@ class EmbeddedListFieldTest(TestCase):
         print_resp(resp)
         p = deserialized['objects'][0]
         p['list'][0]['name'] = "philip"
+        location = p['resource_uri']
+        del p['id']
+        del p['resource_uri']
         print "new data ", p
         put_data = json.dumps(p)
+        put_data = '{"list":[{"name":"evan"}, {"name":"ethan"}]}'
+        print "put_data", put_data
 
-        location = p['resource_uri']
         # TODO: this is failing, probably because the update needs to be done
         # using the A() objects described in django-mongodb-engine
         resp = self.client.put(location,
@@ -167,8 +171,9 @@ class EmbeddedListFieldTest(TestCase):
                                )
         deserialized = json.loads(resp.content)
 
-        self.assertEqual(deserialized,
-                         p)
+        self.assertEqual(len(deserialized['list']), 2)
+        self.assertEqual(deserialized['list'][0]['name'], 'evan')
+        self.assertEqual(deserialized['list'][1]['name'], 'ethan')
         
 
     def test_delete(self):
@@ -194,7 +199,7 @@ class EmbeddedListFieldTest(TestCase):
 ############################################
 # DICTS
 ############################################
-'''
+"""
 class DictFieldTest(TestCase):
 
     def setUp(self):
@@ -262,8 +267,8 @@ class DictFieldTest(TestCase):
  
     def test_delete(self):
         pass
-'''
 
+"""
 
 ############################################
 # EMBEDDED
@@ -274,7 +279,6 @@ class EmbededModelFieldTest(TestCase):
         from models import PersonTest, EmbeddedModelFieldTest
         m = EmbeddedModelFieldTest.objects.create(
                            customer=PersonTest(name="andres"),
-                           customer2=PersonTest(name="douglas"),
                                                  )
         ms = EmbeddedModelFieldTest.objects.all()
 
@@ -286,8 +290,9 @@ class EmbededModelFieldTest(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_post(self):
+        # TODO: post is failing
         request = HttpRequest()
-        post_data = '{"customer":{"name":"san"}, "customer2":{"name":"francis"}}'
+        post_data = '{"customer":{"name":"san"},}'
         resp = self.client.post('/api/v1/embeddedmodelfieldtest/',
                                data=post_data,
                                content_type='application/json',
@@ -343,3 +348,9 @@ class EmbededModelFieldTest(TestCase):
         deserialized = json.loads(resp.content)
         # boom
         self.assertEqual(len(deserialized['objects']), 0)
+
+
+############################
+# EmbeddedCollections
+############################
+
