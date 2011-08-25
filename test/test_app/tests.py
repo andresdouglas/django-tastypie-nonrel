@@ -158,8 +158,6 @@ class EmbeddedListFieldTest(TestCase):
         put_data = '{"list":[{"name":"evan"}, {"name":"ethan"}]}'
         print "put_data", put_data
 
-        # TODO: this is failing, probably because the update needs to be done
-        # using the A() objects described in django-mongodb-engine
         resp = self.client.put(location,
                                data=put_data,
                                content_type='application/json',
@@ -290,7 +288,6 @@ class EmbededModelFieldTest(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_post(self):
-        # TODO: post is failing
         request = HttpRequest()
         post_data = '{"customer":{"name":"san"}}'
         resp = self.client.post('/api/v1/embeddedmodelfieldtest/',
