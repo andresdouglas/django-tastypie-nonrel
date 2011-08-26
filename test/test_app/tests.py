@@ -232,12 +232,12 @@ class EmbeddedListFieldTest(TestCase):
 ############################################
 # DICTS
 ############################################
-"""
 class DictFieldTest(TestCase):
 
     def setUp(self):
         from django.conf import settings; settings.DEBUG = True
         from models import ListFieldTest, DictFieldTest
+        self.location = '/api/v1/dictfieldtest/'
         l = DictFieldTest.objects.create(
                                          dict={"1":1, '2':'2',})
         l = DictFieldTest.objects.create(
@@ -256,25 +256,25 @@ class DictFieldTest(TestCase):
                                               })
 
     def test_get(self):
-        resp = self.client.get('/api/v1/dictfieldtest/', 
+        resp = self.client.get(self.location, 
                                content_type='application/json') 
         self.assertEqual(resp.status_code, 200)
 
     def test_post(self):
         post_data = '{"dict":{"1":1, "2":"2", "3":[1,2,3], "4":{"1":1}}}'
-        resp = self.client.post('/api/v1/dictfieldtest/',
+        resp = self.client.post(self.location,
                                 data = post_data,
                                 content_type = 'application/json'
                                )
 
         self.assertEqual(resp.status_code, 201)
 
-        resp = self.client.get('/api/v1/dictfieldtest/', 
+        resp = self.client.get(self.location,
                                content_type='application/json') 
         self.assertEqual(resp.status_code, 200)
 
     def test_put(self):
-        resp = self.client.get('/api/v1/dictfieldtest/',
+        resp = self.client.get(self.location,
                                content_type='application/json') 
         self.assertEqual(resp.status_code, 200) 
         deserialized = json.loads(resp.content)
@@ -289,7 +289,7 @@ class DictFieldTest(TestCase):
         self.assertEqual(resp.status_code, 204) 
         
         # make sure the update happened
-        resp = self.client.get('/api/v1/dictfieldtest/',
+        resp = self.client.get(self.location,
                                content_type='application/json') 
         self.assertEqual(resp.status_code, 200) 
         deserialized = json.loads(resp.content)
@@ -299,13 +299,32 @@ class DictFieldTest(TestCase):
         self.assertEquals(l['dict'], {'1':'one', 'two':2})
  
     def test_delete(self):
-        pass
+        resp = self.client.get(self.location,
+                               content_type='application/json',
+                               )
 
-"""
+        deserialized = json.loads(resp.content)
+        os = deserialized['objects']
+        location = os[0]['resource_uri'] 
+        num_os = len(os)
+        
+        resp = self.client.delete(location,
+                                  content_type='application/json')
+        self.assertEqual(resp.status_code, 204)
+        # make sure it's actually gone
+        resp = self.client.get(self.location,
+                               content_type='application/json',
+                               )
+        
+        deserialized = json.loads(resp.content)
+        # boom
+        self.assertEqual(len(deserialized['objects']), num_os-1)
+
 
 ############################################
 # EMBEDDED
 ############################################
+
 class EmbededModelFieldTest(TestCase):
     def setUp(self):
         from django.conf import settings; settings.DEBUG = True
