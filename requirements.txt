@@ -10,7 +10,7 @@ pymongo
 -e git+https://github.com/django-mongodb-engine/mongodb-engine.git#egg=django_mongodb_engine
 
 # auth backend
--e hg+https://bitbucket.org/fhahn/django-permission-backend-nonrel#egg=permission_backend_nonrel
+-e git+https://github.com/fhahn/django-permission-backend-nonrel.git#egg=permission_backend_nonrel
 
 # hacked-on version of tastypie
 -e git+https://github.com/andresdouglas/django-tastypie.git@nonrel#egg=tastypie
