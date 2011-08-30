@@ -417,3 +417,23 @@ class EmbededModelFieldTest(TestCase):
 # EmbeddedCollections
 ############################
 
+class EmbeddedCollectionFieldTestCase(TestCase):
+    def setUp(self):
+        from django.conf import settings; settings.DEBUG = True
+        from models import PersonTest, EmbeddedCollectionFieldTest
+        self.m = EmbeddedCollectionFieldTest.objects.create(
+            list=[PersonTest(name="andres"),PersonTest(name="josh")]
+            )
+        
+        ms = EmbeddedCollectionFieldTest.objects.all()
+
+    def test_get(self):
+        request = HttpRequest()
+        resp = self.client.get('/api/v1/embeddedcollectionfieldtest/',
+                               content_type='application/json',
+                               )
+        self.assertEqual(resp.status_code, 200)
+        rj = json.loads(resp.content)
+        self.assertEqual(rj['objects'][0]['list'][0]['name'], 'andres')
+
+

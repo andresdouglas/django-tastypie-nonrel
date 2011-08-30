@@ -165,12 +165,12 @@ class MongoListResource(ModelResource):
             'resource_name': self.parent._meta.resource_name,
             'subresource_name': self.attribute
         }
+        if self.parent:
+            kwargs['pk'] = obj.parent.pk
 
-        if self.instance:
+        elif self.instance:
             kwargs['pk'] = self.instance.pk
 
-        elif self.parent:
-            kwargs['pk'] = obj.parent.pk
 
         kwargs['index'] = obj.pk
 
