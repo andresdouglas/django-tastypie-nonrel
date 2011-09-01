@@ -2,6 +2,8 @@ import unittest
 
 from django.test import TestCase
 from django.http import HttpRequest
+from django.core.urlresolvers import reverse
+
 
 from django.test import TestCase
 import settings
@@ -427,13 +429,23 @@ class EmbeddedCollectionFieldTestCase(TestCase):
         
         ms = EmbeddedCollectionFieldTest.objects.all()
 
+    @property
+    def url(self):
+        r = lambda name, *args, **kwargs: reverse(name, args=args, kwargs=kwargs)
+        return r('api_dispatch_subresource_list',
+                 api_name='v1',
+                 resource_name='embeddedcollectionfieldtest',
+                 pk=self.m.id,
+                 subresource_name='list')
+        
+
     def test_get(self):
         request = HttpRequest()
-        resp = self.client.get('/api/v1/embeddedcollectionfieldtest/',
+        resp = self.client.get(self.url,
                                content_type='application/json',
                                )
         self.assertEqual(resp.status_code, 200)
         rj = json.loads(resp.content)
-        self.assertEqual(rj['objects'][0]['list'][0]['name'], 'andres')
-
+        self.assertEqual(len(rj['objects']), 2)
+        self.assertEqual(rj['objects'][0]['name'], 'andres')
 
