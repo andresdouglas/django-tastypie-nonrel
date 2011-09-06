@@ -72,7 +72,7 @@ class EmbeddedListFieldTestResource(MongoResource):
         authentication      =   Authentication()
 
 class EmbeddedCollectionFieldTestResource(MongoResource):
-    list            =   EmbeddedCollection(to='test_app.api.resources.PersonTestCollectionResource',
+    list            =   EmbeddedCollection(of='test_app.api.resources.PersonTestCollectionResource',
                                            attribute='list',
                                            full=True,
                                            )
