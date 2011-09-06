@@ -33,6 +33,17 @@ class EmbeddedListField(ToManyField):
     is_related = False
     is_m2m = False
 
+    def __init__(self, of, attribute, related_name=None, default=NOT_PROVIDED, null=False, blank=False, readonly=False, full=False, unique=False, help_text=None):
+        super(EmbeddedListField, self).__init__(to=of, 
+                                                 attribute=attribute,
+                                                 related_name=related_name,
+                                                 # default=default, 
+                                                 null=null, 
+                                                 # blank=blank, 
+                                                 # readonly=readonly, 
+                                                 full=full, 
+                                                 unique=unique, 
+                                                 help_text=help_text)
     def dehydrate(self, bundle):
         if not bundle.obj or not bundle.obj.pk:
             if not self.null:

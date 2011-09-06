@@ -60,7 +60,7 @@ class DictFieldTestResource(MongoResource):
         authentication      =   Authentication()
 
 class EmbeddedListFieldTestResource(MongoResource):
-    list            =   EmbeddedListField(to='test_app.api.resources.PersonTestResource',
+    list            =   EmbeddedListField(of='test_app.api.resources.PersonTestResource',
                                     attribute='list',
                                     full=True)
 
